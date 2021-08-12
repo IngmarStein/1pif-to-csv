@@ -1,3 +1,3 @@
-module 1pif-to-csv
+module github.com/IngmarStein/1pif-to-csv
 
 go 1.16
