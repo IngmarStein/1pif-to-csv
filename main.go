@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path"
 	"strings"
 )
 
@@ -41,7 +42,7 @@ type onepifRow struct {
 			Fields []struct {
 				K string `json:"k"`
 				N string `json:"n"`
-				V string `json:"v"`
+				V json.RawMessage `json:"v"`
 				T string `json:"t"`
 			} `json:"fields,omitempty"`
 			Name  string `json:"name"`
@@ -77,13 +78,43 @@ func (r *onepifRow) password() (string, error) {
 func (r *onepifRow) otpAuth() (string, error) {
 	for _, section := range r.SecureContents.Sections {
 		for _, field := range section.Fields {
-			if strings.HasPrefix(field.V, "otpauth://") {
-				return field.V, nil
+			var v string
+			err := json.Unmarshal(field.V, &v)
+			if err != nil {
+				continue
+			}
+			if strings.HasPrefix(v, "otpauth://") {
+				return v, nil
 			}
 		}
 	}
 
 	return "", errors.New("no otpauth found")
+}
+
+// openInputFile attempts to open a given 1pif file by path name. If the path points
+// to a directory, `${name}/data.1pif` is used instead.
+func openInputFile(name string) (*os.File, error) {
+	ifile, err := os.Open(name)
+	if err != nil {
+		return nil, err
+	}
+
+	info, err := ifile.Stat()
+	if err != nil {
+		return nil, err
+	}
+	if !info.IsDir() {
+		return ifile, nil
+	}
+
+	ifile.Close()
+	ifile, err = os.Open(path.Join(name, "data.1pif"))
+	if err != nil {
+		return nil, err
+	}
+
+	return ifile, nil
 }
 
 func main()  {
@@ -94,7 +125,7 @@ func main()  {
 		os.Exit(1)
 	}
 
-	ifile, err := os.Open(*inputFile)
+	ifile, err := openInputFile(*inputFile)
 	if err != nil {
 		log.Fatal(err)
 	}

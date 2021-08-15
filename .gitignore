@@ -4,6 +4,7 @@
 *.dll
 *.so
 *.dylib
+1pif-to-csv
 
 # Test binary, built with `go test -c`
 *.test
