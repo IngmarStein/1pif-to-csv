@@ -7,6 +7,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"path"
@@ -114,47 +115,31 @@ func openInputFile(name string) (*os.File, error) {
 		return nil, err
 	}
 
+
 	return ifile, nil
 }
 
-func main()  {
-	flag.Parse()
-
-	if *inputFile == "" || *outputFile == "" {
-		flag.Usage()
-		os.Exit(1)
-	}
-
-	ifile, err := openInputFile(*inputFile)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer ifile.Close()
-
-	ofile, err := os.Create(*outputFile)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer ofile.Close()
-
-	csvWriter := csv.NewWriter(ofile)
+func onepifToCSV(in io.Reader, out io.Writer) error {
+	scanner := bufio.NewScanner(in)
+	csvWriter := csv.NewWriter(out)
 
 	// write header
 	csvWriter.Write([]string{"Title","Url","Username","Password","OTPAuth"})
-
-	scanner := bufio.NewScanner(ifile)
 
 	lineNr := 0
 	for scanner.Scan() {
 		lineNr++
 		line := scanner.Text()
+		if line == "" {
+			continue
+		}
 		if strings.HasPrefix(line, "***") && strings.HasSuffix(line, "***") {
 			continue
 		}
 
 		var row onepifRow
 		if err := json.Unmarshal([]byte(line), &row); err != nil {
-			log.Printf("failed to parse line %d: %v\n", lineNr, err)
+			log.Printf("failed to parse line %d: %v %q\n", lineNr, err, line)
 			continue
 		}
 
@@ -180,8 +165,35 @@ func main()  {
 	}
 
 	if err := scanner.Err(); err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	csvWriter.Flush()
+
+	return nil
+}
+
+func main()  {
+	flag.Parse()
+
+	if *inputFile == "" || *outputFile == "" {
+		flag.Usage()
+		os.Exit(1)
+	}
+
+	ifile, err := openInputFile(*inputFile)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer ifile.Close()
+
+	ofile, err := os.Create(*outputFile)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer ofile.Close()
+
+	if err := onepifToCSV(ifile, ofile); err != nil {
+		log.Fatal(err)
+	}
 }
