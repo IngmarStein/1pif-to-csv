@@ -41,10 +41,10 @@ type onepifRow struct {
 		HtmlMethod string `json:"htmlMethod"`
 		Sections   []struct {
 			Fields []struct {
-				K string `json:"k"`
-				N string `json:"n"`
+				K string          `json:"k"`
+				N string          `json:"n"`
 				V json.RawMessage `json:"v"`
-				T string `json:"t"`
+				T string          `json:"t"`
 			} `json:"fields,omitempty"`
 			Name  string `json:"name"`
 			Title string `json:"title,omitempty"`
@@ -85,7 +85,8 @@ func (r *onepifRow) otpAuth() (string, error) {
 				continue
 			}
 			if strings.HasPrefix(v, "otpauth://") {
-				return v, nil
+				// transform "otpauth://" into "apple-otpauth://"
+				return "apple-" + v, nil
 			}
 		}
 	}
@@ -115,7 +116,6 @@ func openInputFile(name string) (*os.File, error) {
 		return nil, err
 	}
 
-
 	return ifile, nil
 }
 
@@ -124,7 +124,7 @@ func onepifToCSV(in io.Reader, out io.Writer) error {
 	csvWriter := csv.NewWriter(out)
 
 	// write header
-	csvWriter.Write([]string{"Title","Url","Username","Password","OTPAuth"})
+	csvWriter.Write([]string{"Title", "Url", "Username", "Password", "OTPAuth"})
 
 	lineNr := 0
 	for scanner.Scan() {
@@ -173,7 +173,7 @@ func onepifToCSV(in io.Reader, out io.Writer) error {
 	return nil
 }
 
-func main()  {
+func main() {
 	flag.Parse()
 
 	if *inputFile == "" || *outputFile == "" {

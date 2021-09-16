@@ -7,8 +7,14 @@ built-in password manager. Although 1Password can export CSV files directly, the
 
 ## Installation
 
+With Go 1.17 and later:
 ```shell
-go get github.com/IngmarStein/1pif-to-csv
+go install github.com/ingmarstein/1pif-to-csv@latest
+```
+
+If you are using Go 1.16 or earlier, use this command instead:
+```shell
+go get github.com/ingmarstein/1pif-to-csv
 ```
 
 ## Usage
