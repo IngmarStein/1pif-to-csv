@@ -7,9 +7,9 @@ import (
 
 func TestOnepifToCSV(t *testing.T) {
 	cases := []struct {
-		name string
-		input string
-		want string
+		name    string
+		input   string
+		want    string
 		wantErr bool
 	}{
 		{
@@ -23,7 +23,7 @@ func TestOnepifToCSV(t *testing.T) {
 `,
 			want: `Title,Url,Username,Password,OTPAuth
 Happy,https://sso.test.com,me@email.com,pass,
-WithOTP,https://foo.com,me,foo,otpauth://totp/foo.com:foo.com_me%40email.com?secret=123VS7BXMJBVPDMCUGYXDRJ3NSGXSE99&issuer=foo.com
+WithOTP,https://foo.com,me,foo,apple-otpauth://totp/foo.com:foo.com_me%40email.com?secret=123VS7BXMJBVPDMCUGYXDRJ3NSGXSE99&issuer=foo.com
 `,
 		},
 	}
