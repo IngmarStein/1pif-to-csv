@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"net/url"
 	"os"
 	"path"
 	"strings"
@@ -52,6 +53,7 @@ type onepifRow struct {
 		URLs []struct {
 			Url string `json:"url"`
 		} `json:"URLs"`
+		Password string `json:"password"`
 	} `json:"secureContents"`
 	TxTimestamp int    `json:"txTimestamp"`
 	CreatedAt   int    `json:"createdAt"`
@@ -73,6 +75,9 @@ func (r *onepifRow) username() (string, error) {
 }
 
 func (r *onepifRow) password() (string, error) {
+	if r.SecureContents.Password != "" {
+		return r.SecureContents.Password, nil
+	}
 	return r.fieldWithDesignation("password")
 }
 
@@ -151,10 +156,33 @@ func onepifToCSV(in io.Reader, out io.Writer) error {
 		password, _ := row.password()
 		otpauth, _ := row.otpAuth()
 
-		for _, url := range row.SecureContents.URLs {
+		seen := make(map[string]bool)
+		for _, rowURL := range row.SecureContents.URLs {
+			u, err := url.Parse(rowURL.Url)
+			if err != nil {
+				log.Printf("failed to parse URL %q (line %d): %v\n", rowURL.Url, lineNr, err)
+				continue
+			}
+			// assume https if no scheme is set
+			if u.Scheme == "" {
+				u, err = url.Parse("https://" + rowURL.Url)
+				if err != nil {
+					log.Printf("failed to parse URL %q (line %d): %v\n", rowURL.Url, lineNr, err)
+					continue
+				}
+			}
+			// Monterey's password manager discards the URL path
+			u.Path = "/"
+			u.RawQuery = ""
+			domain := u.String()
+			if seen[domain] {
+				// skip domains we've already emitted
+				continue
+			}
+			seen[domain] = true
 			record := []string{
 				row.Title,
-				url.Url,
+				domain,
 				username,
 				password,
 				otpauth,
