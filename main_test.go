@@ -14,7 +14,7 @@ func TestOnepifToCSV(t *testing.T) {
 	}{
 		{
 			name: "",
-			input: `{"uuid":"7890D22A12584A178484BF175E724E09","updatedAt":1624909782,"locationKey":"test.com","securityLevel":"SL5","contentsHash":"babf5bcb","title":"Happy","location":"https:\/\/sso.test.com","secureContents":{"URLs":[{"url":"https:\/\/sso.test.com"}],"fields":[{"id":"txtBoxEmail","value":"me@email.com","name":"emailAddr","type":"E","designation":"username"},{"id":"txtBoxPasswordConfirm","value":"pass","name":"newPasswordConfirm","type":"P","designation":"password"},{"id":"signUp-chk1","value":"✓","name":"textAgreementFlag","type":"C","designation":""},{"id":"signUp-chk2","value":"","name":"elecMarketingFlag","type":"C","designation":""}],"sections":[{"fields":[{"k":"string","n":"7fgasupcejqfx1pfwvgnipwdjy","v":"First","t":"Vorname*"},{"k":"string","n":"zvhjpv434jx6tbsaib2w4nnfdu","v":"LAst","t":"Nachname*"},{"k":"string","n":"12buh2ler6jctqucm3pld7s5fi","v":"19860801","t":"Geburtsdatum*"},{"k":"string","n":"x6ipyc6yhkmj2c4qhgh5ffgaas","v":"KP9C","t":"Bitte geben Sie den im Bild gezeigten Text ein oder hören Sie den Ton*"}],"title":"Saved on sso.test.com","name":"Section_tw6baovoe2bkzyh3dryjyfbgfa"}]},"txTimestamp":1624909782,"createdAt":1624909779,"typeName":"webforms.WebForm"}
+			input: `{"uuid":"7890D22A12584A178484BF175E724E09","updatedAt":1624909782,"locationKey":"test.com","securityLevel":"SL5","contentsHash":"babf5bcb","title":"Happy","location":"https:\/\/sso.test.com/path/to/login?query","secureContents":{"URLs":[{"url":"https:\/\/sso.test.com"}],"fields":[{"id":"txtBoxEmail","value":"me@email.com","name":"emailAddr","type":"E","designation":"username"},{"id":"txtBoxPasswordConfirm","value":"pass","name":"newPasswordConfirm","type":"P","designation":"password"},{"id":"signUp-chk1","value":"✓","name":"textAgreementFlag","type":"C","designation":""},{"id":"signUp-chk2","value":"","name":"elecMarketingFlag","type":"C","designation":""}],"sections":[{"fields":[{"k":"string","n":"7fgasupcejqfx1pfwvgnipwdjy","v":"First","t":"Vorname*"},{"k":"string","n":"zvhjpv434jx6tbsaib2w4nnfdu","v":"LAst","t":"Nachname*"},{"k":"string","n":"12buh2ler6jctqucm3pld7s5fi","v":"19860801","t":"Geburtsdatum*"},{"k":"string","n":"x6ipyc6yhkmj2c4qhgh5ffgaas","v":"KP9C","t":"Bitte geben Sie den im Bild gezeigten Text ein oder hören Sie den Ton*"}],"title":"Saved on sso.test.com","name":"Section_tw6baovoe2bkzyh3dryjyfbgfa"}]},"txTimestamp":1624909782,"createdAt":1624909779,"typeName":"webforms.WebForm"}
 ***1BB0BAC0-DAA3-43BC-B825-C5A3526CA580***
 {"uuid":"F72C569BEC624A91A58232EB31B8C112","updatedAt":1628374191,"securityLevel":"SL5","contentsHash":"40e33862","title":"noURL","secureContents":{"fields":[{"value":"me@email.com","name":"username","type":"T","designation":"username"},{"value":"USDFISDN2342§§","name":"password","type":"P","designation":"password"}],"passwordHistory":[{"value":"foo","time":1628374191}]},"txTimestamp":1628424597,"createdAt":1628373881,"typeName":"webforms.WebForm"}
 ***1BB0BAC0-DAA3-43BC-B825-C5A3526CA580***
@@ -22,8 +22,8 @@ func TestOnepifToCSV(t *testing.T) {
 ***1BB0BAC0-DAA3-43BC-B825-C5A3526CA580***
 `,
 			want: `Title,Url,Username,Password,OTPAuth
-Happy,https://sso.test.com,me@email.com,pass,
-WithOTP,https://foo.com,me,foo,apple-otpauth://totp/foo.com:foo.com_me%40email.com?secret=123VS7BXMJBVPDMCUGYXDRJ3NSGXSE99&issuer=foo.com
+Happy,https://sso.test.com/,me@email.com,pass,
+WithOTP,https://foo.com/,me,foo,apple-otpauth://totp/foo.com:foo.com_me%40email.com?secret=123VS7BXMJBVPDMCUGYXDRJ3NSGXSE99&issuer=foo.com
 `,
 		},
 	}
