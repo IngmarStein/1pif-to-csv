@@ -178,6 +178,7 @@ func onepifToCSV(in io.Reader, out io.Writer) error {
 			// Monterey's password manager discards the URL path
 			u.Path = "/"
 			u.RawQuery = ""
+			u.Fragment = ""
 			domain := u.String()
 			if seen[domain] {
 				// skip domains we've already emitted
