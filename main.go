@@ -15,8 +15,12 @@ import (
 	"strings"
 )
 
-var inputFile = flag.String("input", "", "input file in 1pif format")
-var outputFile = flag.String("output", "", "output CSV file")
+var (
+	inputFile    = flag.String("input", "", "input file in 1pif format")
+	outputFile   = flag.String("output", "", "output CSV file")
+	printVersion = flag.Bool("version", false, "print version")
+	version      = "0.3"
+)
 
 type onepifRow struct {
 	Uuid           string `json:"uuid"`
@@ -203,6 +207,11 @@ func onepifToCSV(in io.Reader, out io.Writer) error {
 
 func main() {
 	flag.Parse()
+
+	if *printVersion {
+		fmt.Println(version)
+		os.Exit(0)
+	}
 
 	if *inputFile == "" || *outputFile == "" {
 		flag.Usage()
