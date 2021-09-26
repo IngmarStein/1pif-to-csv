@@ -7,6 +7,11 @@ built-in password manager. Although 1Password can export CSV files directly, the
 
 ## Installation
 
+With [Homebrew](https://brew.sh) (recommended):
+```shell
+brew install ingmarstein/repo/1pif-to-csv
+```
+
 With Go 1.17 and later:
 ```shell
 go install github.com/ingmarstein/1pif-to-csv@latest
